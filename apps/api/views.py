@@ -1,5 +1,8 @@
 from django.http import JsonResponse
 
+from apps.product.models import Product
+
 
 def api_home(request):
-    return JsonResponse({'msg': 'hello ard'})
+    data = Product.objects.all().order_by('?').first()
+    return JsonResponse({'msg': data.title})
