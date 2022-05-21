@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: new_tex
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - pgdb
+      - redis
+
+  celery:
+    build: .
+    command: celery -A newTex worker -l INFO --pool=solo
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+      - rabbitmq
+
+  pgdb:
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASS}
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+
+
+volumes:
+  pgdata:
+  redis_data:

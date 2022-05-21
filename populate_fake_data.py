@@ -22,5 +22,5 @@ def populate(n):
 
 if __name__ == '__main__':
     print('Populating data...')
-    populate(5)
+    populate(10)
     print('Populating complete')
